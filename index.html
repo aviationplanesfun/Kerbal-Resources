@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kerbal Space Program Calculators</title>
+    <style>
+        /* General Styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+            background: #1e1e1e;
+            border-bottom: 2px solid #333333;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            color: #00d1b2;
+            text-transform: uppercase;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .menu-button {
+            width: 220px;
+            padding: 12px;
+            font-size: 1.1em;
+            text-align: center;
+            margin: 10px;
+            background: linear-gradient(135deg, #009688, #004d40);
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .menu-button:hover {
+            background: #00695c;
+            transform: translateY(-3px);
+        }
+
+        .tool-section {
+            display: none; /* Hidden by default */
+            width: 90%;
+            max-width: 800px;
+            padding: 20px;
+            background: #1e1e1e;
+            border: 2px solid #333333;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tool-section.active {
+            display: block; /* Visible when active */
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
+
+        .input-group input {
+            width: calc(100% - 22px);
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #333333;
+            border-radius: 5px;
+            background: #2a2a2a;
+            color: #ffffff;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #00d1b2;
+        }
+
+        .output {
+            margin-top: 15px;
+            font-size: 1.2em;
+            color: #00d1b2;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            background: #1e1e1e;
+            border-top: 2px solid #333333;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Kerbal Space Program Calculators</h1>
+    </header>
+    <main>
+        <!-- Navigation Menu -->
+        <button class="menu-button" onclick="showSection('delta-v')">Delta-V Calculator</button>
+        <button class="menu-button" onclick="showSection('orbit')">Orbit Calculator</button>
+        <button class="menu-button" onclick="showSection('launch')">Launch Angle & Gravity Turn</button>
+        <button class="menu-button" onclick="showSection('landing')">Landing Planner</button>
+        <button class="menu-button" onclick="showSection('escape')">Escape Velocity</button>
+        <button class="menu-button" onclick="showSection('hohmann')">Hohmann Transfer</button>
+        <button class="menu-button" onclick="showSection('impact')">Time to Impact</button>
+
+        <!-- Delta-V Calculator -->
+        <section id="delta-v" class="tool-section">
+            <h2>Delta-V Calculator</h2>
+            <div class="input-group">
+                <label for="mass-full">Full Mass (tons)</label>
+                <input type="number" id="mass-full" placeholder="Enter full mass">
+            </div>
+            <div class="input-group">
+                <label for="mass-empty">Empty Mass (tons)</label>
+                <input type="number" id="mass-empty" placeholder="Enter empty mass">
+            </div>
+            <div class="input-group">
+                <label for="isp">Specific Impulse (s)</label>
+                <input type="number" id="isp" placeholder="Enter specific impulse">
+            </div>
+            <button class="menu-button" onclick="calculateDeltaV()">Calculate</button>
+            <div id="delta-v-output" class="output"></div>
+        </section>
+
+        <!-- Orbit Calculator -->
+        <section id="orbit" class="tool-section">
+            <h2>Orbit Calculator</h2>
+            <div class="input-group">
+                <label for="orbit-altitude">Orbit Altitude (km)</label>
+                <input type="number" id="orbit-altitude" placeholder="Enter orbit altitude">
+            </div>
+            <button class="menu-button" onclick="calculateOrbit()">Calculate</button>
+            <div id="orbit-output" class="output"></div>
+        </section>
+
+        <!-- Launch Angle & Gravity Turn -->
+        <section id="launch" class="tool-section">
+            <h2>Launch Angle & Gravity Turn</h2>
+            <div class="input-group">
+                <label for="launch-angle">Launch Angle (degrees)</label>
+                <input type="number" id="launch-angle" placeholder="Enter launch angle">
+            </div>
+            <button class="menu-button" onclick="calculateLaunchAngle()">Calculate</button>
+            <div id="launch-output" class="output"></div>
+        </section>
+
+        <!-- Landing Planner -->
+        <section id="landing" class="tool-section">
+            <h2>Landing Planner</h2>
+            <div class="input-group">
+                <label for="entry-speed">Entry Speed (m/s)</label>
+                <input type="number" id="entry-speed" placeholder="Enter entry speed">
+            </div>
+            <div class="input-group">
+                <label for="gravity">Gravity (m/s²)</label>
+                <input type="number" id="gravity" placeholder="Enter gravity value">
+            </div>
+            <button class="menu-button" onclick="calculateLanding()">Calculate</button>
+            <div id="landing-output" class="output"></div>
+        </section>
+
+        <!-- Escape Velocity -->
+        <section id="escape" class="tool-section">
+            <h2>Escape Velocity</h2>
+            <div class="input-group">
+                <label for="planet-radius">Planet Radius (km)</label>
+                <input type="number" id="planet-radius" placeholder="Enter planet radius">
+            </div>
+            <div class="input-group">
+                <label for="planet-gravity">Planet Gravity (m/s²)</label>
+                <input type="number" id="planet-gravity" placeholder="Enter planet gravity">
+            </div>
+            <button class="menu-button" onclick="calculateEscapeVelocity()">Calculate</button>
+            <div id="escape-output" class="output"></div>
+        </section>
+
+        <!-- Hohmann Transfer -->
+        <section id="hohmann" class="tool-section">
+            <h2>Hohmann Transfer</h2>
+            <div class="input-group">
+                <label for="initial-orbit">Initial Orbit (km)</label>
+                <input type="number" id="initial-orbit" placeholder="Enter initial orbit radius">
+            </div>
+            <div class="input-group">
+                <label for="final-orbit">Final Orbit (km)</label>
+                <input type="number" id="final-orbit" placeholder="Enter final orbit radius">
+            </div>
+            <button class="menu-button" onclick="calculateHohmannTransfer()">Calculate</button>
+            <div id="hohmann-output" class="output"></div>
+        </section>
+
+        <!-- Time to Impact -->
+        <section id="impact" class="tool-section">
+            <h2>Time to Impact</h2>
+            <div class="input-group">
+                <label for="speed">Speed (m/s)</label>
+                <input type="number" id="speed" placeholder="Enter speed">
+            </div>
+            <div class="input-group">
+                <label for="distance">Distance to Surface (m)</label>
+                <input type="number" id="distance" placeholder="Enter distance to surface">
+            </div>
+            <button class="menu-button" onclick="calculateImpact()">Calculate</button>
+            <div id="impact-output" class="output"></div>
+        </section>
+
+    </main>
+    <footer>
+        <p>© 2024 Kerbal Space Program Calculators</p>
+    </footer>
+
+    <script>
+        // Show specific section
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.tool-section');
+            sections.forEach(section => section.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        // Delta-V Calculator
+        function calculateDeltaV() {
+            const massFull = parseFloat(document.getElementById('mass-full').value);
+            const massEmpty = parseFloat(document.getElementById('mass-empty').value);
+            const isp = parseFloat(document.getElementById('isp').value);
+
+            if (isNaN(massFull) || isNaN(massEmpty) || isNaN(isp) || massFull <= massEmpty) {
+                document.getElementById('delta-v-output').innerText = "Invalid inputs.";
+                return;
+            }
+
+            const deltaV = isp * 9.81 * Math.log(massFull / massEmpty);
+            document.getElementById('delta-v-output').innerText = `Delta-V: ${deltaV.toFixed(2)} m/s`;
+        }
+
+        // Orbit Calculator
+        function calculateOrbit() {
+            const altitude = parseFloat(document.getElementById('orbit-altitude').value);
+
+            if (isNaN(altitude)) {
+                document.getElementById('orbit-output').innerText = "Invalid input.";
+                return;
+            }
+
+            const radius = 600 + altitude; // Earth radius + altitude
+            const orbitalPeriod = 2 * Math.PI * Math.sqrt(Math.pow(radius * 1000, 3) / (398600.4418)); // Orbital period in seconds
+
+            document.getElementById('orbit-output').innerText = `Orbital Period: ${orbitalPeriod.toFixed(2)} seconds`;
+        }
+
+        // Launch Angle & Gravity Turn
+        function calculateLaunchAngle() {
+            const launchAngle = parseFloat(document.getElementById('launch-angle').value);
+
+            if (isNaN(launchAngle)) {
+                document.getElementById('launch-output').innerText = "Invalid input.";
+                return;
+            }
+
+            document.getElementById('launch-output').innerText = `Launch Angle: ${launchAngle} degrees`;
+        }
+
+        // Landing Planner
+        function calculateLanding() {
+            const speed = parseFloat(document.getElementById('entry-speed').value);
+            const gravity = parseFloat(document.getElementById('gravity').value);
+
+            if (isNaN(speed) || isNaN(gravity) || gravity <= 0) {
+                document.getElementById('landing-output').innerText = "Invalid inputs.";
+                return;
+            }
+
+            const burnTime = speed / gravity;
+            document.getElementById('landing-output').innerText = `Retro-burn Time: ${burnTime.toFixed(2)} seconds`;
+        }
+
+        // Escape Velocity Calculator
+        function calculateEscapeVelocity() {
+            const radius = parseFloat(document.getElementById('planet-radius').value);
+            const gravity = parseFloat(document.getElementById('planet-gravity').value);
+
+            if (isNaN(radius) || isNaN(gravity)) {
+                document.getElementById('escape-output').innerText = "Invalid inputs.";
+                return;
+            }
+
+            const escapeVelocity = Math.sqrt(2 * gravity * radius * 1000);
+            document.getElementById('escape-output').innerText = `Escape Velocity: ${escapeVelocity.toFixed(2)} m/s`;
+        }
+
+        // Hohmann Transfer
+        function calculateHohmannTransfer() {
+            const initialOrbit = parseFloat(document.getElementById('initial-orbit').value);
+            const finalOrbit = parseFloat(document.getElementById('final-orbit').value);
+
+            if (isNaN(initialOrbit) || isNaN(finalOrbit) || finalOrbit <= initialOrbit) {
+                document.getElementById('hohmann-output').innerText = "Invalid inputs.";
+                return;
+            }
+
+            const deltaV = Math.sqrt(398600.4418 / (initialOrbit + finalOrbit)) * Math.abs(finalOrbit - initialOrbit);
+            document.getElementById('hohmann-output').innerText = `Delta-V for Hohmann Transfer: ${deltaV.toFixed(2)} m/s`;
+        }
+
+        // Time to Impact
+        function calculateImpact() {
+            const speed = parseFloat(document.getElementById('speed').value);
+            const distance = parseFloat(document.getElementById('distance').value);
+
+            if (isNaN(speed) || isNaN(distance) || distance <= 0) {
+                document.getElementById('impact-output').innerText = "Invalid inputs.";
+                return;
+            }
+
+            const timeToImpact = distance / speed;
+            document.getElementById('impact-output').innerText = `Time to Impact: ${timeToImpact.toFixed(2)} seconds`;
+        }
+    </script>
+</body>
+</html>
